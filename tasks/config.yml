@@ -20,9 +20,9 @@
     max_concurrent_uploads: "{{ docker_config_max_concurrent_uploads }}"
     debug: "{{ docker_config_debug }}"
     selinux_enabled: "{{ docker_config_selinux_enabled }}"
-    experimental: true
+    experimental: "{{ docker_config_experimental }}"
     group: "{{ docker_config_group }}"
-    bridge: "{{ docker_config_bridge }}"
+    bridge: "{{ docker_config_bridge | default(omit) }}"
     bip: "{{ docker_config_bip }}"
     fixed_cidr: "{{ docker_config_fixed_cidr }}"
     fixed_cidr_v6: "{{ docker_config_fixed_cidr_v6 }}"
@@ -33,31 +33,20 @@
   notify:
     - restart docker
 
-# # configure docker deamon json file
-# - name: configure docker daemon.json
-#   template:
-#     src: daemon.json.j2
-#     dest: /etc/docker/daemon.json
-#     mode: 0400
-#     owner: root
-#     group: root
-#   notify:
-#     - restart docker
-
 # push client config if enabled
 - name: create docker client config directory
   file:
     state: directory
     path: "{{ docker_client_config_location | dirname }}"
     mode: 0750
-  when: docker_client_config_enabled == true
+  when: docker_client_config_enabled
 
 - name: configure docker client config.json
   template:
     src: "config.json.j2"
     dest: "{{ docker_client_config_location }}"
     mode: 0440
-  when: docker_client_config_enabled == true
+  when: docker_client_config_enabled
 
 # configure proxy settings if enabled
 - name: create dropin directory
@@ -85,6 +74,6 @@
     mode: 0640
     owner: root
     group: root
-  when: docker_proxy_enabled == true
+  when: docker_proxy_enabled
   notify:
     - systemctl daemon-reload

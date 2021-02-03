@@ -9,12 +9,13 @@
   yum:
     name: "{{ docker_pkg_name }}"
     state: "{{ docker_pkg_state }}"
-    disable_gpg_check: no
+    disable_gpg_check: false
 
-- name: Install Docker Python Module
-  yum:
-    name: "{{ docker_py_pkg_name | default('python-docker-py') }}"
-    state: "{{ docker_py_pkg_state | default('present') }}"
-    disable_gpg_check: no
-  when:
-    - docker_install_py_module
+# - name: Install Docker Python Module
+#   yum:
+#     name: "{{ docker_py_pkg_name | default('python-docker-py') }}"
+#     state: "{{ docker_py_pkg_state | default('present') }}"
+#     disable_gpg_check: false
+#   when:
+#     - docker_install_py_module
+#

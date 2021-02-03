@@ -2,7 +2,7 @@
 
 - name: Remove default debian packaged docker
   package:
-    name: [ docker, docker-engine ]
+    name: [docker, docker-engine]
     state: absent
 
 - name: Install Docker
@@ -11,9 +11,10 @@
     state: "{{ docker_pkg_state }}"
     update_cache: true
 
-- name: Install Docker Python Module
-  package:
-    name: "{{ docker_py_pkg_name | default('python-docker') }}"
-    state: "{{ docker_py_pkg_state | default('present') }}"
-  when:
-    - docker_install_py_module
+# - name: Install Docker Python Module
+#   package:
+#     name: "{{ docker_py_pkg_name | default('python-docker') }}"
+#     state: "{{ docker_py_pkg_state | default('present') }}"
+#   when:
+#     - docker_install_py_module
+#

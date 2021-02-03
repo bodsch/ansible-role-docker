@@ -7,7 +7,6 @@
 from __future__ import absolute_import, division, print_function
 import os
 import json
-import crypt
 import hashlib
 
 from ansible.module_utils.basic import AnsibleModule
@@ -55,24 +54,30 @@ class DockerCommonConfig(object):
         self.insecure_registries = module.params.get("insecure_registries")
 
         self.config_file = "/etc/docker/daemon.json"
-
-        module.log(msg="data_root: '{}'".format(self.data_root))
+        self.config_checksum = "/etc/docker/.checksum"
 
     def run(self):
-        res = dict(
-            changed=False,
-            failed=False,
-            ansible_module_results="none"
-        )
-
+        """
+            run
+        """
         if(self.state == 'absent'):
-            pass
+            """
+                remove created files
+            """
+            if(os.path.isfile(self.config_file)):
+                os.remove(self.config_file)
+
+            if(os.path.isfile(self.config_checksum)):
+                os.remove(self.config_checksum)
 
             return dict(
                 changed = True,
                 failed = False,
                 msg = "config removed"
             )
+
+        _old_checksum = ''
+        _data_changed = False
 
         data = dict()
 
@@ -130,21 +135,43 @@ class DockerCommonConfig(object):
         if(self.insecure_registries):
             data["insecure-registries"] = self.insecure_registries
 
-        # module.log(msg="write json")
-        with open(self.config_file, 'w') as fp:
-            json.dump(data, fp, indent=2, sort_keys=False)
+        # create checksum of our data
+        _checksum = self.__checksum(json.dumps(data, sort_keys=True))
+
+        if(os.path.isfile(self.config_checksum)):
+            with open(self.config_checksum, "r") as _sum:
+                _old_checksum = _sum.readlines()[0]
+
+        # compare both checksums
+        if(_old_checksum != _checksum):
+            with open(self.config_file, 'w') as fp:
+                json.dump(data, fp, indent=2, sort_keys=False)
+
+            with open(self.config_checksum, 'w') as fp:
+                fp.write(_checksum)
+
+            _data_changed = True
 
         return dict(
-            changed = True,
+            changed = _data_changed,
             failed = False,
             msg = "config created"
         )
 
+    def __checksum(self, plaintext):
+        """
+            create checksum from string
+        """
+        password_bytes = plaintext.encode('utf-8')
+        password_hash = hashlib.sha256(password_bytes)
+        checksum = password_hash.hexdigest()
 
-# ===========================================
+        return checksum
+
+
+# ---------------------------------------------------------------------------------------
 # Module execution.
 #
-
 
 def main():
     global module
