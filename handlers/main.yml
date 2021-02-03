@@ -8,3 +8,5 @@
 - name: systemctl daemon-reload
   systemd:
     daemon_reload: true
+  notify:
+    - restart docker

@@ -7,10 +7,12 @@ docker_repo_enabled: true
 docker_repo_channel_stable_enabled: true
 docker_repo_channel_edge_enabled: false
 docker_repo_channel_test_enabled: false
+
 ## name of docker package to install
 docker_pkg_name: "docker-ce"
 ## state of package (present, latest, exc.)
 docker_pkg_state: "present"
+
 ## name of docker service
 docker_service_name: "docker"
 ## should docker daemon start on boot?
@@ -25,6 +27,7 @@ docker_install_py_module: false
 # docker_py_pkg_state: "latest"
 
 # Proxy related ----------------------------------------------------------------
+
 ## should docker daemon use a proxy for outbound connections?
 docker_proxy_enabled: false
 ## list of env variables we should set (comment out the ones you don't need)
@@ -34,6 +37,7 @@ docker_proxy_env:
   - "NO_PROXY=localhost,127.0.0.1,internalhub.example.com"
 
 # docker client configuration --------------------------------------------------
+
 ## enable authentication for docker registry
 docker_client_config_enabled: false
 ## the location we should push client configuration
@@ -46,15 +50,19 @@ docker_client_config_location: "/root/.docker/config.json"
 #      email: "SOME_EMAIL"
 
 # default dockerd configuration options ----------------------------------------
+
 ## https://docs.docker.com/engine/reference/commandline/dockerd/#/linux-configuration-file
 
 ## docker_config_hosts option removed because docker-ce packaging in ubuntu prevents this:
 ## https://github.com/docker/docker-ce-packaging/pull/132
 # docker_config_hosts:
 #   - "unix:///var/run/docker.sock"
-docker_config_graph: "/var/lib/docker"
+docker_config_data_root: "/opt/docker"
 docker_config_log_driver: ""
-docker_config_log_opts: {}
+docker_config_log_opts:
+    env: "os,customer"
+    "max-file": "5"
+    "max-size": "10m"
 docker_config_max_concurrent_downloads: 3
 docker_config_max_concurrent_uploads: 5
 docker_config_debug: false
@@ -68,7 +76,9 @@ docker_config_default_gateway_v6: ""
 docker_config_selinux_enabled: false
 docker_config_ip: "0.0.0.0"
 docker_config_group: "{{ docker_group }}"
-docker_config_insecure_registries: []
+docker_config_insecure_registries:
+  - 172.0.0.1/32
+  - 172.10.10.1/32
 
 # disable tls for now because tlsverify option implemented strangely
 # https://github.com/docker/docker/issues/27105
@@ -82,27 +92,28 @@ docker_config_insecure_registries: []
 # ==============================================================================
 # dictionary of common configuration options  ----------------------------------
 # ==============================================================================
-docker_config_common:
-  "log-driver": "{{ docker_config_log_driver }}"
-  "log-opts": "{{ docker_config_log_opts }}"
-  "data-root": "{{ docker_config_graph }}"
-  "max-concurrent-downloads": "{{ docker_config_max_concurrent_downloads }}"
-  "max-concurrent-uploads": "{{ docker_config_max_concurrent_uploads }}"
-  "debug": "{{ docker_config_debug }}"
-  ## hosts option removed in common because docker-ce packaging in ubuntu prevents this:
-  ## https://github.com/docker/docker-ce-packaging/pull/132
-  # "hosts": "{{ docker_config_hosts }}"
-  "log-level": "{{ docker_config_log_level }}"
-  "selinux-enabled": "{{ docker_config_selinux_enabled }}"
-  "group": "{{ docker_config_group }}"
-  "bridge": "{{ docker_config_bridge }}"
-  "bip": "{{ docker_config_bip }}"
-  "fixed-cidr": "{{ docker_config_fixed_cidr }}"
-  "fixed-cidr-v6": "{{ docker_config_fixed_cidr_v6 }}"
-  "default-gateway": "{{ docker_config_default_gateway }}"
-  "default-gateway-v6": "{{ docker_config_default_gateway_v6 }}"
-  "insecure-registries": "{{ docker_config_insecure_registries }}"
-  "ip": "{{ docker_config_ip }}"
+
+# docker_config_common:
+#   "log-driver": "{{ docker_config_log_driver }}"
+#   "log-opts": "{{ docker_config_log_opts }}"
+#   "data-root": "{{ docker_config_data_root }}"
+#   "max-concurrent-downloads": "{{ docker_config_max_concurrent_downloads }}"
+#   "max-concurrent-uploads": "{{ docker_config_max_concurrent_uploads }}"
+#   "debug": "{{ docker_config_debug }}"
+#   ## hosts option removed in common because docker-ce packaging in ubuntu prevents this:
+#   ## https://github.com/docker/docker-ce-packaging/pull/132
+#   # "hosts": "{{ docker_config_hosts }}"
+#   "log-level": "{{ docker_config_log_level }}"
+#   "selinux-enabled": "{{ docker_config_selinux_enabled }}"
+#   "group": "{{ docker_config_group }}"
+#   "bridge": "{{ docker_config_bridge }}"
+#   "bip": "{{ docker_config_bip }}"
+#   "fixed-cidr": "{{ docker_config_fixed_cidr }}"
+#   "fixed-cidr-v6": "{{ docker_config_fixed_cidr_v6 }}"
+#   "default-gateway": "{{ docker_config_default_gateway }}"
+#   "default-gateway-v6": "{{ docker_config_default_gateway_v6 }}"
+#   "insecure-registries": "{{ docker_config_insecure_registries }}"
+#   "ip": "{{ docker_config_ip }}"
 
 # ==============================================================================
 # dictionary for extra/custom settings that can be added -----------------------

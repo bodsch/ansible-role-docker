@@ -9,15 +9,40 @@
     owner: root
     group: root
 
-# configure docker deamon json file
 - name: configure docker daemon.json
-  template:
-    src: daemon.json.j2
-    dest: /etc/docker/daemon.json
-    mode: 0400
-    owner: root
-    group: root
-  notify: restart docker
+  docker_common_config:
+    state: present
+    log_driver: "{{ docker_config_log_driver }}"
+    log_opts: "{{ docker_config_log_opts }}"
+    log_level: "{{ docker_config_log_level }}"
+    data_root: "{{ docker_config_data_root }}"
+    max_concurrent_downloads: "{{ docker_config_max_concurrent_downloads }}"
+    max_concurrent_uploads: "{{ docker_config_max_concurrent_uploads }}"
+    debug: "{{ docker_config_debug }}"
+    selinux_enabled: "{{ docker_config_selinux_enabled }}"
+    experimental: true
+    group: "{{ docker_config_group }}"
+    bridge: "{{ docker_config_bridge }}"
+    bip: "{{ docker_config_bip }}"
+    fixed_cidr: "{{ docker_config_fixed_cidr }}"
+    fixed_cidr_v6: "{{ docker_config_fixed_cidr_v6 }}"
+    default_gateway: "{{ docker_config_default_gateway }}"
+    default_gateway_v6: "{{ docker_config_default_gateway_v6 }}"
+    insecure_registries: "{{ docker_config_insecure_registries }}"
+    ip: "{{ docker_config_ip }}"
+  notify:
+    - restart docker
+
+# # configure docker deamon json file
+# - name: configure docker daemon.json
+#   template:
+#     src: daemon.json.j2
+#     dest: /etc/docker/daemon.json
+#     mode: 0400
+#     owner: root
+#     group: root
+#   notify:
+#     - restart docker
 
 # push client config if enabled
 - name: create docker client config directory
@@ -52,7 +77,6 @@
     group: root
   notify:
     - systemctl daemon-reload
-    - restart docker
 
 - name: add systemd dropin for proxy
   template:
@@ -64,4 +88,3 @@
   when: docker_proxy_enabled == true
   notify:
     - systemctl daemon-reload
-    - restart docker

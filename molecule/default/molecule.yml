@@ -13,7 +13,8 @@ lint: |
 
 platforms:
   - name: dind
-    image: bodsch/molecule-dind:2101
+    # image: bodsch/molecule-dind:2101
+    image: paulfantom/debian-molecule:10
     docker_host: "${DOCKER_HOST:-unix://run/docker.sock}"
     privileged: true
     volumes:
