@@ -41,7 +41,7 @@ jobs:
   #         flake8 .
 
   tests:
-    name: ${{ matrix.image }} / python: ${{ matrix.python-version }}, ansible: ${{ matrix.ansible-version }}
+    name: "${{ matrix.image }} / python: ${{ matrix.python-version }}, ansible: ${{ matrix.ansible-version }}"
     runs-on: ubuntu-18.04
     strategy:
       fail-fast: false
