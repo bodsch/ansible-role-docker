@@ -75,8 +75,8 @@ def test_listening_socket(host, get_vars):
 
     socket_name = get_vars.get('docker_service_socket')
 
-    #for i in host.socket.get_listening_sockets():
-    #    pp.pprint(i)
+    # for i in host.socket.get_listening_sockets():
+    #     pp.pprint(i)
 
     socket = host.socket('unix://{}'.format(socket_name))
 
@@ -88,4 +88,3 @@ def test_service_running_and_enabled(host):
     service = host.service('docker')
     assert service.is_running
     assert service.is_enabled
-
