@@ -5,6 +5,7 @@ _docker_dependencies:
     - python3-pip
   debian:
     - python3-pip
+    - net-tools
   fedora:
     - iptables
   redhat:

@@ -31,13 +31,7 @@
     insecure_registries: "{{ docker_config_insecure_registries }}"
     ip: "{{ docker_config_ip }}"
   register: _changed_docker_configuration
-  notify: restart-docker
-
-- debug:
-    var: "{{ item }}"
-  when: item is defined
-  loop:
-    - _changed_docker_configuration
+  notify: daemon-reload
 
 # push client config if enabled
 - name: create docker client config directory
