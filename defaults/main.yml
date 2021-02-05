@@ -26,6 +26,7 @@ docker_install_py_module: false
 ## use options below if you wish to override them
 # docker_py_pkg_name: "python-docker-py"
 # docker_py_pkg_state: "latest"
+docker_service_socket: /run/containerd/containerd.sock
 
 # Proxy related ----------------------------------------------------------------
 
@@ -59,6 +60,7 @@ docker_client_config_location: "/root/.docker/config.json"
 ## https://github.com/docker/docker-ce-packaging/pull/132
 # docker_config_hosts:
 #   - "unix:///var/run/docker.sock"
+
 docker_config_data_root: "/var/lib/docker"
 docker_config_log_driver: ""
 docker_config_log_opts: {}

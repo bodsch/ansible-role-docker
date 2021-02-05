@@ -50,31 +50,42 @@ def get_vars(host):
     return result
 
 
-# def test_user(host, get_vars):
-#     user_name = get_vars.get('acme_sh_become_user')
-#
-#     assert host.group(user_name).exists
-#     assert host.user(user_name).exists
-#     assert user_name in host.user(user_name).groups
-#
-#
-# @pytest.mark.parametrize("dirs", [
-#     "/etc/ssl/ansible",
-#     "/srv/www/letsencrypt/.well-known/acme-challenge"
-# ])
-# def test_directories(host, dirs):
-#
-#     d = host.file(dirs)
-#     assert d.is_directory
-#     assert d.exists
-#
-#
-# def test_files(host, get_vars):
-#     user_name = get_vars.get('acme_sh_become_user')
-#
-#     file = "/var/lib/{user}/src/acme.sh/acme.sh".format(user=user_name)
-#
-#     f = host.file(file)
-#     assert f.exists
-#     assert f.is_file
-#
+@pytest.mark.parametrize("packages", [
+    "iptables",
+    "docker-ce",
+])
+def test_packages(host, packages):
+    """
+    """
+    p = host.package(packages)
+    assert p.is_installed
+
+
+@pytest.mark.parametrize("dirs", [
+    "/etc/docker",
+])
+def test_directories(host, dirs):
+
+    d = host.file(dirs)
+    assert d.is_directory
+    assert d.exists
+
+
+def test_listening_socket(host, get_vars):
+
+    socket_name = get_vars.get('docker_service_socket')
+
+    #for i in host.socket.get_listening_sockets():
+    #    pp.pprint(i)
+
+    socket = host.socket('unix://{}'.format(socket_name))
+
+    assert socket.is_listening
+
+
+def test_service_running_and_enabled(host):
+
+    service = host.service('docker')
+    assert service.is_running
+    assert service.is_enabled
+

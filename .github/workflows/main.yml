@@ -1,0 +1,89 @@
+v---
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: "0 2 * * 0"
+
+defaults:
+  run:
+    working-directory: 'ansible-role-docker'
+
+jobs:
+
+  # lint:
+  #   name: Lint
+  #   runs-on: ubuntu-latest
+  #
+  #   steps:
+  #     - name: check out the codebase.
+  #       uses: actions/checkout@v2
+  #       with:
+  #         path: 'ansible-role-docker'
+  #
+  #     - name: set up python.
+  #       uses: actions/setup-python@v2
+  #       with:
+  #         python-version: '3.x'
+  #
+  #     - name: install test dependencies.
+  #       run: pip install -r test-requirements.txt
+  #
+  #     - name: Lint code.
+  #       run: |
+  #         yamllint .
+  #         ansible-lint .
+  #         flake8 .
+
+  tests:
+    name: ${{ matrix.distribution.image }} ${{ matrix.distribution.version }}
+    runs-on: ubuntu-18.04
+    strategy:
+      fail-fast: false
+      matrix:
+        distribution:
+          - image: debian
+            version: "9"
+          - image: debian
+            version: "10"
+          - image: ubuntu
+            version: "18.04"
+          - image: centos
+            version: 8
+          - image: oraclelinux
+            version: 8
+        python-version:
+          - '3.8'
+          - '3.9'
+        ansible-version:
+          - '2.9'
+          - '2.10'
+
+    steps:
+      - name: check out the codebase.
+        uses: actions/checkout@v2
+        with:
+          path: 'ansible-role-docker'
+
+      - name: set up python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r test-requirements.txt
+
+      - name: test with tox
+        run: |
+          tox -e py$(printf "${{ matrix.python-version }}" | tr -d '.')-ansible$(printf "${{ matrix.ansible-version }}" | tr -d '.') -- molecule test
+        env:
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
+          MOLECULE_DISTRO: ${{ matrix.distribution.image }}
+          MOLECULE_VERSION: ${{ matrix.distribution.version }}

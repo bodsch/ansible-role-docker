@@ -19,8 +19,13 @@
       when:
         - ansible_python.version.major == 2
         - _stat_present_python3.stat.exists
+
+    - name: Gathering Facts now
+      setup:
+
   when:
-    - ansible_os_family | lower == 'debian'
+    - ansible_os_family | lower == 'debian' or
+      ansible_distribution | lower == 'amazon'
 
 - name: create requirements.txt
   template:
@@ -30,7 +35,7 @@
 
 - name: install docker python packages
   pip:
-    # executable: pip3
+    executable: pip3
     requirements: /tmp/docker-requirements.txt
     state: present
   register: pip_install

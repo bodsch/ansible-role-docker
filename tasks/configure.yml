@@ -30,8 +30,14 @@
     default_gateway_v6: "{{ docker_config_default_gateway_v6 }}"
     insecure_registries: "{{ docker_config_insecure_registries }}"
     ip: "{{ docker_config_ip }}"
-  notify:
-    - restart docker
+  register: _changed_docker_configuration
+  notify: restart-docker
+
+- debug:
+    var: "{{ item }}"
+  when: item is defined
+  loop:
+    - _changed_docker_configuration
 
 # push client config if enabled
 - name: create docker client config directory
@@ -57,15 +63,18 @@
     owner: root
     group: root
 
-- name: create overwrite.conf
+- name: add systemd dropin to using configuration
   template:
     src: overwrite.conf.j2
     dest: "/etc/systemd/system/docker.service.d/overwrite.conf"
     mode: 0640
     owner: root
     group: root
-  notify:
-    - systemctl daemon-reload
+  notify: daemon-reload
+  when:
+    - _changed_docker_configuration is defined
+    - _changed_docker_configuration.changed is defined
+    - _changed_docker_configuration.changed
 
 - name: add systemd dropin for proxy
   template:
@@ -75,5 +84,4 @@
     owner: root
     group: root
   when: docker_proxy_enabled
-  notify:
-    - systemctl daemon-reload
+  notify: daemon-reload
