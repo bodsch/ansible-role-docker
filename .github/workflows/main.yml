@@ -40,22 +40,17 @@ jobs:
   #         flake8 .
 
   tests:
-    name: ${{ matrix.distribution.image }} ${{ matrix.distribution.version }}
+    name: ${{ matrix.image }} / python: ${{ matrix.python-version }}, ansible: ${{ matrix.ansible-version }}
     runs-on: ubuntu-18.04
     strategy:
       fail-fast: false
       matrix:
-        distribution:
-          - image: debian
-            version: "9"
-          - image: debian
-            version: "10"
-          - image: ubuntu
-            version: "18.04"
-          - image: centos
-            version: 8
-          - image: oraclelinux
-            version: 8
+        image:
+          - debian:9
+          - debian:10
+          - ubuntu:18.04
+          - centos:8
+          - oraclelinux:8
         python-version:
           - '3.8'
           - '3.9'
@@ -85,5 +80,4 @@ jobs:
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
-          MOLECULE_DISTRO: ${{ matrix.distribution.image }}
-          MOLECULE_VERSION: ${{ matrix.distribution.version }}
+          DISTRIBUTION:  ${{ matrix.image }}
