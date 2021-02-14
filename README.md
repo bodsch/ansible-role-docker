@@ -1,7 +1,6 @@
 
 This role will fully configure and install [Docker](https://www.docker.com/).
 
-
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/bodsch/ansible-icinga2/CI)][ci]
 [![GitHub issues](https://img.shields.io/github/issues/bodsch/ansible-role-docker)][issues]
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/bodsch/ansible-role-docker)][releases]
@@ -27,7 +26,6 @@ Tested on
 **this role only supports docker versions 1.11+**.
 
 ## Role Variables
-
 
 The following variables can be used to customize the docker installation:
 
@@ -68,7 +66,8 @@ docker_proxy:
 ```
 
 ### docker client configuration 
- enable authentication for docker registry
+
+enable authentication for docker registry
 
 ```
 docker_client_config:
@@ -114,7 +113,6 @@ docker_config:
   ip: "0.0.0.0"
   group: "{{ docker_group }}"
   insecure_registries: []
-
 ```
 
 ## Examples
@@ -181,7 +179,6 @@ Advanced playbook with various variables applied
     - George Bolo | [linuxctl.com](https://linuxctl.com)
 
 - modified:
-
     - Bodo Schulz
 
 ## License
