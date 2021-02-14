@@ -1,29 +1,36 @@
-Docker - Ansible Role
-=========
 
-![CI](https://github.com/bodsch/ansible-role-docker/workflows/CI/badge.svg)
+This role will fully configure and install [Docker](https://www.docker.com/).
 
----
 
-This role will fully configure and install [Docker](https://www.docker.com/) on the following platforms:
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/bodsch/ansible-icinga2/CI)][ci]
+[![GitHub issues](https://img.shields.io/github/issues/bodsch/ansible-role-docker)][issues]
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/bodsch/ansible-role-docker)][releases]
 
- - RHEL/CentOS 8
- - OracleLinux 8
+[ci]: https://github.com/bodsch/ansible-role-docker/actions
+[issues]: https://github.com/bodsch/ansible-role-docker/issues?q=is%3Aopen+is%3Aissue
+[releases]: https://github.com/bodsch/ansible-role-docker/releases
+
+
+## Requirements & Dependencies
+
+- Connectivity to docker-ce package repository (https://download.docker.com)
+
+### Operating systems
+
+Tested on
+
  - Debian 9 and 10
  - Ubuntu 18.04
+ - CentOS 8
+ - OracleLinux 8
 
 **this role only supports docker versions 1.11+**.
 
-Requirements
-------------
+## Role Variables
 
-- OS: CentOS 8 or Ubuntu
-- Connectivity to docker-ce package repository (https://download.docker.com)
-
-Role Variables
---------------
 
 The following variables can be used to customize the docker installation:
+
 ```yaml
 
 ## choose docker repo channel enable status
@@ -32,7 +39,7 @@ docker_repo:
     stable_enabled: true
     test_enabled: false
     nightly_enabled: false
-    
+
 ## state of package (present, absent, exc.)
 docker_state: "present"
 
@@ -46,9 +53,11 @@ docker_containerd_socket: /run/containerd/containerd.sock
 
 ## name group for docker socket file
 docker_group: "docker"
+```
+### Proxy related 
+should docker daemon use a proxy for outbound connections?
 
-# Proxy related ----------------------------------------------------------------
-## should docker daemon use a proxy for outbound connections?
+```
 docker_proxy:
   enabled: false
   ## list of env variables we should set (comment out the ones you don't need)
@@ -56,25 +65,33 @@ docker_proxy:
     - "HTTP_PROXY=http://proxy.example.com:80/"
     - "HTTP_PROXY=https://proxy.example.com:443/"
     - "NO_PROXY=localhost,127.0.0.1,internalhub.example.com"
+```
 
-# docker client configuration --------------------------------------------------
+### docker client configuration 
+ enable authentication for docker registry
 
-## enable authentication for docker registry
+```
 docker_client_config:
   enabled: false
   ## the location we should push client configuration
   location: "/root/.docker/config.json"
+```
 
-# for auth (docker login) use something like:
-#docker_client_config:
-#  auths:
-#    "https://test.tld:1234":
-#      auth: "SOME_STRING"
-#      email: "SOME_EMAIL"
+#### for auth (docker login) use something like
 
-# default dockerd configuration options ----------------------------------------
-## https://docs.docker.com/engine/reference/commandline/dockerd/#/linux-configuration-file
+```
+docker_client_config:
+  auths:
+    "https://test.tld:1234":
+      auth: "SOME_STRING"
+      email: "SOME_EMAIL"
+```
 
+### default dockerd configuration options
+
+https://docs.docker.com/engine/reference/commandline/dockerd/#/linux-configuration-file
+
+```
 docker_config:
   data_root: "/var/lib/docker"
   log_driver: ""
@@ -98,14 +115,12 @@ docker_config:
   group: "{{ docker_group }}"
   insecure_registries: []
 
-# additional custom docker settings can be added to this dict:
-docker_config_custom: {}
 ```
 
-Example Playbooks
-----------------
+## Examples
 
 Install latest docker **stable** release on your local centos server
+
 ```
 - hosts: localhost
   roles:
@@ -113,6 +128,7 @@ Install latest docker **stable** release on your local centos server
 ```
 
 Install latest docker **edge** release on your local centos server
+
 ```
 - hosts: localhost
   roles:
@@ -122,6 +138,7 @@ Install latest docker **edge** release on your local centos server
 ```
 
 Install older docker **stable** release on your local centos server
+
 ```
 - hosts: localhost
   roles:
@@ -137,7 +154,7 @@ Advanced playbook with various variables applied
 - hosts: localhost
   vars:
     # store docker containers/images to /opt/docker
-    docker_config.
+    docker_config:
       data_root: /opt/docker
       # change default docker bridge subnet
       bip: 172.16.77.77/24
@@ -158,16 +175,17 @@ Advanced playbook with various variables applied
     - role: docker
 ```
 
-Author and License
--------
-original `docker` role written by:
+## Author and License
 
-- George Bolo | [linuxctl.com](https://linuxctl.com)
+- original `docker` role written by:
+    - George Bolo | [linuxctl.com](https://linuxctl.com)
 
-modified:
+- modified:
 
-- Bodo Schulz
+    - Bodo Schulz
 
-License: **MIT**
+## License
+
+MIT
 
 `FREE SOFTWARE, HELL YEAH!`
