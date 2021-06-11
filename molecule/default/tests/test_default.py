@@ -82,18 +82,6 @@ def test_directories(host, dirs):
     assert d.exists
 
 
-def test_listening_socket(host, get_vars):
-
-    socket_name = get_vars.get('docker_containerd_socket')
-
-    # for i in host.socket.get_listening_sockets():
-    #     pp.pprint(i)
-
-    socket = host.socket('unix://{}'.format(socket_name))
-
-    assert socket.is_listening
-
-
 def test_service_running_and_enabled(host):
 
     service = host.service('docker')
