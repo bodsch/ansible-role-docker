@@ -3,7 +3,7 @@
 docker_config:
   # data_root: /opt/docker
   max_concurrent_downloads: 10
-  debug: true
+  debug: false
   # enable experimental mode
   experimental: false
   # expose docker api over socket file and tcp
